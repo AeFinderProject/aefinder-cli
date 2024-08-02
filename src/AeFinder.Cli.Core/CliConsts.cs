@@ -1,25 +1,24 @@
+using System.Collections.Immutable;
+
 namespace AeFinder.Cli;
 
 public static class CliConsts
 {
-    public static Dictionary<AeFinderNetwork, AeFinderEndpoint> AeFinderEndpoints =
-        new()
-        {
+    public static readonly ImmutableDictionary<AeFinderNetwork, AeFinderEndpoint> AeFinderEndpoints =
+        ImmutableDictionary.CreateRange(
+            new[]
             {
-                AeFinderNetwork.MainNet, new AeFinderEndpoint
+                KeyValuePair.Create(AeFinderNetwork.MainNet, new AeFinderEndpoint
                 {
                     AuthEndpoint = "https://indexer-auth.aefinder.io/",
                     ApiEndpoint = "https://indexer-api.aefinder.io/"
-                }
-            },
-            {
-                AeFinderNetwork.TestNet, new AeFinderEndpoint
+                }),
+                KeyValuePair.Create(AeFinderNetwork.TestNet, new AeFinderEndpoint
                 {
                     AuthEndpoint = "https://gcptest-indexer-auth.aefinder.io/",
                     ApiEndpoint = "https://gcptest-indexer-api.aefinder.io/"
-                }
-            }
-        };
+                })
+            });
 
     public const string HttpClientName = "AeFinderHttpClient";
 }
