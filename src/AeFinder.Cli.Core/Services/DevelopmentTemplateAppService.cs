@@ -21,7 +21,7 @@ public class DevelopmentTemplateAppService : IDevelopmentTemplateAppService, ITr
     private readonly ICancellationTokenProvider _cancellationTokenProvider;
     private readonly IRemoteServiceExceptionHandler _remoteServiceExceptionHandler;
     private readonly ILogger<DevelopmentTemplateAppService> _logger;
-
+    
     public DevelopmentTemplateAppService(IAuthService authService, IJsonSerializer jsonSerializer,
         CliHttpClientFactory cliHttpClientFactory, ICancellationTokenProvider cancellationTokenProvider,
         ILogger<DevelopmentTemplateAppService> logger, IRemoteServiceExceptionHandler remoteServiceExceptionHandler)
@@ -66,19 +66,25 @@ public class DevelopmentTemplateAppService : IDevelopmentTemplateAppService, ITr
         var result = await response.Content.ReadAsStreamAsync();
         ZipHelper.UnZip(result, options.Directory);
             
-        _logger.LogInformation("The AeFinder App: {app} is initialized successfully. Directory: {directory}", options.Name, options.Directory);
+        _logger.LogInformation("The AeFinder App: {App} is initialized successfully. Directory: {Directory}", options.Name, options.Directory);
     }
 
-    private void CheckOptions(InitAppOptions options)
+    private static void CheckOptions(InitAppOptions options)
     {
         if (options.Name.Length is < 2 or > 20)
         {
             throw new UserFriendlyException("The name should be between 2 and 20 in length.");
         }
 
-        if (!Regex.IsMatch(options.Name, "[A-Za-z][A-Za-z0-9.]+"))
+        if (!ProjectNameRegex.IsValid(options.Name))
         {
             throw new UserFriendlyException("The Name must begin with a letter and can only contain letters('A'-'Z', 'a'-'z'), numbers(0-9), and dots('.').");
         }
     }
+}
+
+public static partial class ProjectNameRegex {
+    [GeneratedRegex("^[A-Za-z][A-Za-z0-9.]+")]
+    public static partial Regex Regex();
+    public static bool IsValid(string name) => Regex().IsMatch(name);
 }

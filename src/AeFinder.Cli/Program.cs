@@ -6,7 +6,7 @@ using Volo.Abp;
 
 namespace AeFinder.Cli;
 
-public class Program
+public static class Program
 {
     private static async Task Main(string[] args)
     {
@@ -27,7 +27,7 @@ public class Program
             .WriteTo.Console(theme: AnsiConsoleTheme.Sixteen)
             .CreateLogger();
 
-        using var application = AbpApplicationFactory.Create<AeFinderCliModule>(
+        using var application = await AbpApplicationFactory.CreateAsync<AeFinderCliModule>(
             options =>
             {
                 options.UseAutofac();

@@ -3,6 +3,7 @@ using Volo.Abp.DependencyInjection;
 using Volo.Abp.Http;
 using Volo.Abp.Json;
 using System.Text.Json;
+using Volo.Abp;
 
 namespace AeFinder.Cli;
 
@@ -36,7 +37,7 @@ public class RemoteServiceExceptionHandler : IRemoteServiceExceptionHandler, ITr
             exceptionMessage += remoteServiceErrorMessage;
         }
 
-        throw new Exception(exceptionMessage);
+        throw new UserFriendlyException(exceptionMessage);
     }
 
     public async Task<string> GetAbpRemoteServiceErrorAsync(HttpResponseMessage responseMessage)
@@ -75,7 +76,7 @@ public class RemoteServiceExceptionHandler : IRemoteServiceExceptionHandler, ITr
             sbError.Append("Message: " + errorResult.Error.Message);
         }
 
-        if (errorResult.Error.ValidationErrors != null && errorResult.Error.ValidationErrors.Any())
+        if (errorResult.Error.ValidationErrors != null && errorResult.Error.ValidationErrors.Length > 0)
         {
             if (sbError.Length > 0)
             {

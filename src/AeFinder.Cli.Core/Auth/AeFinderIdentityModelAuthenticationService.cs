@@ -11,8 +11,7 @@ using Volo.Abp.Threading;
 namespace AeFinder.Cli.Auth;
 
 [Dependency(ReplaceServices = true)]
-public class AeFinderIdentityModelAuthenticationService : IdentityModelAuthenticationService,
-    IIdentityModelAuthenticationService, ITransientDependency
+public class AeFinderIdentityModelAuthenticationService : IdentityModelAuthenticationService
 {
     public AeFinderIdentityModelAuthenticationService(IOptions<AbpIdentityClientOptions> options,
         ICancellationTokenProvider cancellationTokenProvider, IHttpClientFactory httpClientFactory,
@@ -51,7 +50,7 @@ public class AeFinderIdentityModelAuthenticationService : IdentityModelAuthentic
         }
     }
 
-    private async Task<TokenResponse> RequestClientCredentialsTokenAsync(HttpMessageInvoker client,
+    private static async Task<TokenResponse> RequestClientCredentialsTokenAsync(HttpMessageInvoker client,
         ClientCredentialsTokenRequest request, CancellationToken cancellationToken = default)
     {
         var clone = request.Clone();

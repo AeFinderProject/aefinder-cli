@@ -2,7 +2,7 @@ using ICSharpCode.SharpZipLib.Zip;
 
 namespace AeFinder.Cli.Utils;
 
-public class ZipHelper
+public static class ZipHelper
 {
     public static void ZipDirectory(string zipFileName, string sourceDirectory)
     {

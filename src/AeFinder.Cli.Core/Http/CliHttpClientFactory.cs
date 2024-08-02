@@ -9,13 +9,10 @@ public class CliHttpClientFactory : ISingletonDependency
     public static readonly TimeSpan DefaultTimeout = TimeSpan.FromMinutes(2);
 
     private readonly IHttpClientFactory _clientFactory;
-    private readonly ICancellationTokenProvider _cancellationTokenProvider;
 
-    public CliHttpClientFactory(IHttpClientFactory clientFactory,
-        ICancellationTokenProvider cancellationTokenProvider)
+    public CliHttpClientFactory(IHttpClientFactory clientFactory)
     {
         _clientFactory = clientFactory;
-        _cancellationTokenProvider = cancellationTokenProvider;
     }
 
     public HttpClient CreateClient(string accessToken = null, TimeSpan? timeout = null)

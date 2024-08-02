@@ -39,8 +39,8 @@ public class CliService : ITransientDependency
     private async Task RunAsync(object obj)
     {
         var commonOptions = obj as CommonOptions;
-        _logger.LogInformation("Network : {network}", commonOptions.Network);
-        _logger.LogInformation("AppId   : {appid}", commonOptions.AppId);
+        _logger.LogInformation("Network : {Network}", commonOptions.Network);
+        _logger.LogInformation("AppId   : {AppId}", commonOptions.AppId);
         
         switch (obj)
         {

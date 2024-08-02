@@ -2,7 +2,7 @@ namespace AeFinder.Cli;
 
 public static class CliConsts
 {
-    public static readonly Dictionary<AeFinderNetwork, AeFinderEndpoint> AeFinderEndpoints =
+    public static Dictionary<AeFinderNetwork, AeFinderEndpoint> AeFinderEndpoints =
         new()
         {
             {

@@ -7,9 +7,7 @@ namespace AeFinder.Cli.Auth;
 public class AuthService : IAuthService, ITransientDependency
 {
     private readonly IIdentityModelAuthenticationService _authenticationService;
-
-    private string _accessToken = string.Empty;
-
+    
     public AuthService(IIdentityModelAuthenticationService authenticationService)
     {
         _authenticationService = authenticationService;

@@ -37,8 +37,8 @@ public class AppService : IAppService, ITransientDependency
         var client = _cliHttpClientFactory.CreateClient(token);
 
         var formDataContent = new MultipartFormDataContent();
-        formDataContent.Add(new StringContent(File.ReadAllText(options.Manifest)), "Manifest");
-        formDataContent.Add(new StreamContent(new MemoryStream(File.ReadAllBytes(options.Code))), "Code", "code.dll");
+        formDataContent.Add(new StringContent(await File.ReadAllTextAsync(options.Manifest)), "Manifest");
+        formDataContent.Add(new StreamContent(new MemoryStream(await File.ReadAllBytesAsync(options.Code))), "Code", "code.dll");
 
         using var response = await client.PostAsync(
             url,
@@ -49,7 +49,7 @@ public class AppService : IAppService, ITransientDependency
         await _remoteServiceExceptionHandler.EnsureSuccessfulHttpResponseAsync(response);
 
         var responseContent = await response.Content.ReadAsStringAsync();
-        _logger.LogInformation("Deploy app successfully. Version: {version}", responseContent);
+        _logger.LogInformation("Deploy app successfully. Version: {Version}", responseContent);
     }
 
     public async Task UpdateAsync(UpdateAppOptions options)
@@ -77,7 +77,7 @@ public class AppService : IAppService, ITransientDependency
         var client = _cliHttpClientFactory.CreateClient(token);
 
         var formDataContent = new MultipartFormDataContent();
-        formDataContent.Add(new StreamContent(new MemoryStream(File.ReadAllBytes(options.Code))), "Code", "code.dll");
+        formDataContent.Add(new StreamContent(new MemoryStream(await File.ReadAllBytesAsync(options.Code))), "Code", "code.dll");
 
         using var response = await client.PutAsync(
             url,
@@ -101,7 +101,7 @@ public class AppService : IAppService, ITransientDependency
 
         using var response = await client.PutAsync(
             url,
-            new StringContent(File.ReadAllText(options.Manifest), Encoding.UTF8, MimeTypes.Application.Json),
+            new StringContent(await File.ReadAllTextAsync(options.Manifest), Encoding.UTF8, MimeTypes.Application.Json),
             _cancellationTokenProvider.Token
         );
 
