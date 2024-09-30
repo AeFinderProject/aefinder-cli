@@ -2,7 +2,7 @@ using CommandLine;
 
 namespace AeFinder.Cli.Options;
 
-[Verb("init", HelpText = "Init AeFinder App development project.")]
+[Verb("init", HelpText = "Init AeIndexer development project.")]
 public class InitAppOptions : CommonOptions
 {
     [Option(longName: "name", Required = true, HelpText = "The project name.")]
