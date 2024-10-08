@@ -60,7 +60,9 @@ public class AppService : IAppService, ITransientDependency
     {
         var token = await _authService.GetAccessTokenAsync(options.Network, options.AppId, options.Key);
 
-        if (!options.Code.IsNullOrWhiteSpace())
+        if (!options.Code.IsNullOrWhiteSpace() ||
+            (options.DeleteAttachmentKeys != null && options.DeleteAttachmentKeys.Any()) ||
+            (options.Attachments != null && options.Attachments.Any()))
         {
             await UpdateCodeAsync(options, token);
         }
@@ -81,7 +83,11 @@ public class AppService : IAppService, ITransientDependency
         var client = _cliHttpClientFactory.CreateClient(token);
 
         var formDataContent = new MultipartFormDataContent();
-        formDataContent.Add(new StreamContent(new MemoryStream(await File.ReadAllBytesAsync(options.Code))), "Code", "code.dll");
+        if (!options.Code.IsNullOrWhiteSpace())
+        {
+            formDataContent.Add(new StreamContent(new MemoryStream(await File.ReadAllBytesAsync(options.Code))), "Code",
+                "code.dll");
+        }
 
         if (options.DeleteAttachmentKeys != null && options.DeleteAttachmentKeys.Any())
         {
