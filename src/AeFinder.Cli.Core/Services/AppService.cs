@@ -30,7 +30,7 @@ public class AppService : IAppService, ITransientDependency
 
     public async Task DeployAsync(DeployAppOptions options)
     {
-        _logger.LogInformation("Deploying app...");
+        _logger.LogInformation("Deploying AeIndexer...");
         
         var token = await _authService.GetAccessTokenAsync(options.Network, options.AppId, options.Key);
         var url = $"{CliConsts.AeFinderEndpoints[options.Network].ApiEndpoint}api/apps/subscriptions";
@@ -39,6 +39,10 @@ public class AppService : IAppService, ITransientDependency
         var formDataContent = new MultipartFormDataContent();
         formDataContent.Add(new StringContent(await File.ReadAllTextAsync(options.Manifest)), "Manifest");
         formDataContent.Add(new StreamContent(new MemoryStream(await File.ReadAllBytesAsync(options.Code))), "Code", "code.dll");
+        foreach (var path in options.Attachments)
+        {
+            formDataContent.Add(new StreamContent(new MemoryStream(await File.ReadAllBytesAsync(path))), "AttachmentList", Path.GetFileName(path));
+        }
 
         using var response = await client.PostAsync(
             url,
@@ -49,14 +53,16 @@ public class AppService : IAppService, ITransientDependency
         await _remoteServiceExceptionHandler.EnsureSuccessfulHttpResponseAsync(response);
 
         var responseContent = await response.Content.ReadAsStringAsync();
-        _logger.LogInformation("Deploy app successfully. Version: {Version}", responseContent);
+        _logger.LogInformation("Deploy AeIndexer successfully. Version: {Version}", responseContent);
     }
 
     public async Task UpdateAsync(UpdateAppOptions options)
     {
         var token = await _authService.GetAccessTokenAsync(options.Network, options.AppId, options.Key);
 
-        if (!options.Code.IsNullOrWhiteSpace())
+        if (!options.Code.IsNullOrWhiteSpace() ||
+            (options.DeleteAttachmentKeys != null && options.DeleteAttachmentKeys.Any()) ||
+            (options.Attachments != null && options.Attachments.Any()))
         {
             await UpdateCodeAsync(options, token);
         }
@@ -69,7 +75,7 @@ public class AppService : IAppService, ITransientDependency
 
     private async Task UpdateCodeAsync(UpdateAppOptions options, string token)
     {
-        _logger.LogInformation("Updating app code...");
+        _logger.LogInformation("Updating AeIndexer code...");
         
         var url =
             $"{CliConsts.AeFinderEndpoints[options.Network].ApiEndpoint}api/apps/subscriptions/code/{options.Version}";
@@ -77,7 +83,25 @@ public class AppService : IAppService, ITransientDependency
         var client = _cliHttpClientFactory.CreateClient(token);
 
         var formDataContent = new MultipartFormDataContent();
-        formDataContent.Add(new StreamContent(new MemoryStream(await File.ReadAllBytesAsync(options.Code))), "Code", "code.dll");
+        if (!options.Code.IsNullOrWhiteSpace())
+        {
+            formDataContent.Add(new StreamContent(new MemoryStream(await File.ReadAllBytesAsync(options.Code))), "Code",
+                "code.dll");
+        }
+
+        if (options.DeleteAttachmentKeys != null && options.DeleteAttachmentKeys.Any())
+        {
+            formDataContent.Add(new StringContent(options.DeleteAttachmentKeys.JoinAsString(",")), "AttachmentDeleteFileKeyList");
+        }
+
+        if (options.Attachments != null)
+        {
+            foreach (var path in options.Attachments)
+            {
+                formDataContent.Add(new StreamContent(new MemoryStream(await File.ReadAllBytesAsync(path))),
+                    "AttachmentList", Path.GetFileName(path));
+            }
+        }
 
         using var response = await client.PutAsync(
             url,
@@ -87,12 +111,12 @@ public class AppService : IAppService, ITransientDependency
 
         await _remoteServiceExceptionHandler.EnsureSuccessfulHttpResponseAsync(response);
 
-        _logger.LogInformation("Update code successfully.");
+        _logger.LogInformation("Update AeIndexer successfully.");
     }
 
     private async Task UpdateManifestAsync(UpdateAppOptions options, string token)
     {
-        _logger.LogInformation("Updating app manifest...");
+        _logger.LogInformation("Updating AeIndexer manifest...");
         
         var url =
             $"{CliConsts.AeFinderEndpoints[options.Network].ApiEndpoint}api/apps/subscriptions/manifest/{options.Version}";
