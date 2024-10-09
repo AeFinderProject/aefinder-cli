@@ -36,7 +36,7 @@ public class DevelopmentTemplateAppService : IDevelopmentTemplateAppService, ITr
 
     public async Task CreateProjectAsync(InitAppOptions options)
     {
-        _logger.LogInformation("Initialize app...");
+        _logger.LogInformation("Initialize AeIndexer...");
         
         CheckOptions(options);
         
@@ -66,7 +66,7 @@ public class DevelopmentTemplateAppService : IDevelopmentTemplateAppService, ITr
         var result = await response.Content.ReadAsStreamAsync();
         ZipHelper.UnZip(result, options.Directory);
             
-        _logger.LogInformation("The AeFinder App: {App} is initialized successfully. Directory: {Directory}", options.Name, options.Directory);
+        _logger.LogInformation("The AeIndexer: {App} is initialized successfully. Directory: {Directory}", options.Name, options.Directory);
     }
 
     private static void CheckOptions(InitAppOptions options)
